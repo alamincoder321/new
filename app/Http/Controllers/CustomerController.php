@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use Brian2694\Toastr\Facades\Toastr;
 use Carbon\Carbon;
+use App\Models\Cart;
 
 class CustomerController extends Controller
 {
@@ -50,14 +51,23 @@ class CustomerController extends Controller
             'upozila'       => 'required',
         ]);
 
-        Customer::insert([
+        $new_customer = Customer::create([
             'name'     => ucwords($request->name),
             'phone'     => $request->phone,
             'city_name' => ucwords($request->city_name),
             'upozila'   => ucwords($request->upozila),
-            'created_at'=> Carbon::now()
+            'created_at' => Carbon::now()
         ]);
-
+        if ($request->from_pos) {
+            $carts     = Cart::where('user_ip', request()->ip())->latest()->get();
+            $total = Cart::where('user_ip', request()->ip())->get()->sum(
+                function ($t) {
+                    return $t->weight * $t->product->unit_cost;
+                }
+            );
+            $customers = Customer::where('status', 1)->latest()->get();
+            return view('pos.cart_body', compact('carts', 'total', 'customers', 'new_customer'));
+        }
         Toastr::success('Customer added Successfully');
         return back();
     }
@@ -106,7 +116,7 @@ class CustomerController extends Controller
         $customer->phone     = $request->phone;
         $customer->city_name = ucwords($request->city_name);
         $customer->upozila   = ucwords($request->upozila);
-        $customer->updated_at= Carbon::now();
+        $customer->updated_at = Carbon::now();
         $customer->update();
 
         Toastr::success('Customer updated Successfully!');
@@ -143,5 +153,4 @@ class CustomerController extends Controller
         Toastr::error('Customer Inactive successfully!');
         return back();
     }
-
 }

@@ -26,7 +26,7 @@
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        
+
                         <div class="pull-left m-t-30">
                             <address>
                               <strong>Customer Name: </strong>{{$finalinvoice->customer->name}}<br>
@@ -111,5 +111,10 @@
             window.print();
             document.body.innerHTML = backup;
         }
+        @if(request()->has('print'))
+            setTimeout(() => {
+                myprint('printc');
+            }, 500);
+        @endif
     </script>
 @endpush

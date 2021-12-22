@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Brian2694\Toastr\Facades\Toastr;
 use App\Models\Cart;
+use App\Models\Customer;
 use Carbon\Carbon;
 
 class CartController extends Controller
@@ -19,14 +20,14 @@ class CartController extends Controller
         $this->middleware('auth');
     }
 
-    public function store(Request $request, $id){
+    public function store(Request $request, $id)
+    {
         $check = Cart::where('product_id', $id)->where('user_ip', request()->ip())->first();
         if ($check) {
             Cart::where('product_id', $id)->where('user_ip', request()->ip())->increment('weight');
 
             Toastr::success('Cart Product added successfully!');
-            return back();
-        }else{
+        } else {
             $cart = new Cart;
             $cart->product_id = $id;
             $cart->weight     = 1;
@@ -35,10 +36,15 @@ class CartController extends Controller
             $cart->save();
 
             Toastr::success('Cart Product added successfully!');
-            return back();
         }
-
-
+        $carts     = Cart::where('user_ip', request()->ip())->latest()->get();
+        $total = Cart::where('user_ip', request()->ip())->get()->sum(
+            function ($t) {
+                return $t->weight * $t->product->unit_cost;
+            }
+        );
+        $customers = Customer::where('status', 1)->latest()->get();
+        return view('pos.cart_body', compact('carts', 'total', 'customers'));
     }
 
     public function update(Request $request, $id)
@@ -53,9 +59,14 @@ class CartController extends Controller
     {
         Cart::where('id', $id)->where('user_ip', request()->ip())->delete();
 
-        Toastr::error('Cart Product delete successfully!');
-        return back();
+        // Toastr::error('Cart Product delete successfully!');
+        $carts     = Cart::where('user_ip', request()->ip())->latest()->get();
+        $total = Cart::where('user_ip', request()->ip())->get()->sum(
+            function ($t) {
+                return $t->weight * $t->product->unit_cost;
+            }
+        );
+        $customers = Customer::where('status', 1)->latest()->get();
+        return view('pos.cart_body', compact('carts', 'total', 'customers'));
     }
-
-
 }

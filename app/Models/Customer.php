@@ -8,15 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
-    protected $fillable = [
-        'fname',
-        'lname',
-        'phone',
-        'city_name',
-        'upozila',
-        'status'
-    ];
 
 
     public function order()

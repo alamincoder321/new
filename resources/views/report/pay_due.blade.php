@@ -29,7 +29,7 @@
                                         <th>Sl</th>
                                         <th>Customer Name</th>
                                         <th>Due</th>
-                                        <th class="text-center">Action</th>                                
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
 
@@ -44,9 +44,9 @@
                                             <td>{{$customer->order->sum('due')-$customer->due->sum('pay_due')}}</td>
                                             <td class="text-center">
                                                 <a href="{{route ('list.due', $customer->id)}}" class="btn btn-success btn-sm"><i class="fa fa-eye text-danger"></i>Due Payment History</a>
-                                                
+
                                         <a  class="btn btn-purple btn-sm" data-toggle="modal" data-target="#con-close-modal{{$customer->id}}">Payment</a>
-                                                
+
                                         </td>
                                         </tr>
                                     @endif
@@ -64,33 +64,33 @@
                         @csrf
                         <input type="hidden" name="customer_id" value="{{$customer->id}}">
                         <input type="hidden" name="month" value="{{date('m.Y')}}">
-                        <div class="modal-body"> 
-                            <div class="row">  
-                                <div class="col-md-6"> 
-                                    <div class="form-group"> 
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="field-2" class="control-label">Pay Due</label>
-                                        <input type="number" name="pay_due" class="form-control" placeholder="Pay Due">
+                                        <input type="number" name="pay_due" class="form-control" placeholder="Pay Due" max="{{$customer->order->sum('due')-$customer->due->sum('pay_due')}}">
                                             @if ($errors->has('pay_due'))
                                             <span class="text-danger">{{$errors->first('pay_due')}}</span>
-                                            @endif 
-                                    </div> 
+                                            @endif
+                                    </div>
                                 </div>
-                                <div class="col-md-6"> 
-                                    <div class="form-group"> 
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="field-2" class="control-label">Pay Date</label>
                                         <input type="text" name="pay_date" class="form-control" value="{{date('d.m.Y')}}" readonly>
-                                    </div> 
+                                    </div>
                                 </div>
                             </div>
-                        <div class="modal-footer"> 
-                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button> 
-                            <button type="submit" class="btn btn-info waves-effect waves-light">Due Pay</button> 
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-info waves-effect waves-light">Due Pay</button>
                         </div>
-                        </form> 
+                        </form>
                         </div>
                     </div>
-                </div><!-- /.modal -->                                    
-                                    
+                </div><!-- /.modal -->
+
                                     @endforeach
                                 </tbody>
 
@@ -100,7 +100,7 @@
                     </div>
                 </div>
             </div>
-        </div>             
+        </div>
     </div> <!-- End Row -->
 
 @endsection
